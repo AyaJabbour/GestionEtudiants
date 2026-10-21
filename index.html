@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projet Kanban</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: #f5f6fa;
+    }
+
+    h1 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .column {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      min-height: 300px;
+    }
+
+    .column h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+    }
+
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-height: 220px;
+    }
+
+    .task {
+      background: #eef2ff;
+      border: 1px solid #d7defa;
+      border-radius: 8px;
+      padding: 0.6rem;
+      cursor: move;
+    }
+
+    form {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    input, button {
+      font-size: 1rem;
+      padding: 0.55rem 0.7rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Projet de Kanban</h1>
+  <form id="task-form">
+    <input id="task-input" type="text" placeholder="Ajouter une tâche" required>
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <main class="board">
+    <section class="column" data-column="todo">
+      <h2>À faire</h2>
+      <div class="tasks" id="todo"></div>
+    </section>
+    <section class="column" data-column="doing">
+      <h2>En cours</h2>
+      <div class="tasks" id="doing"></div>
+    </section>
+    <section class="column" data-column="done">
+      <h2>Terminé</h2>
+      <div class="tasks" id="done"></div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("task-form");
+    const input = document.getElementById("task-input");
+    const columns = document.querySelectorAll(".tasks");
+
+    const createTask = (text) => {
+      const task = document.createElement("article");
+      task.className = "task";
+      task.draggable = true;
+      task.textContent = text;
+      task.addEventListener("dragstart", () => {
+        task.classList.add("dragging");
+      });
+      task.addEventListener("dragend", () => {
+        task.classList.remove("dragging");
+      });
+      return task;
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      document.getElementById("todo").appendChild(createTask(text));
+      input.value = "";
+      input.focus();
+    });
+
+    columns.forEach((column) => {
+      column.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        const dragging = document.querySelector(".dragging");
+        if (dragging) {
+          column.appendChild(dragging);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
